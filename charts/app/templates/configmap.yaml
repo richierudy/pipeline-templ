@@ -1,0 +1,21 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+{{ include "app.labels" . | indent 4 }}
+data:
+  init.sql: |
+    use knights;
+    
+    CREATE TABLE favorite_colors (
+    name VARCHAR(20),
+    color VARCHAR(10)
+    );
+
+    INSERT INTO favorite_colors
+    (name, color)
+    VALUES
+    ('Lancelot', 'blue'),
+    ('Galahad', 'yellow');
+  

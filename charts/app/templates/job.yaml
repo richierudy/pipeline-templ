@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+{{ include "app.labels" . | indent 4 }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: post-install-job
+        image: "arey/mysql-client"
+        command: ['/bin/sh', '-c']
+        args: ['mysql --port=3306 --host=$host --user=$user --password=$password knights < /opt/init.sql']
+        envFrom:
+          - secretRef:
+              name: {{ include "app.fullname" . }}
+        volumeMounts:
+          - name: init-data
+            mountPath: /opt/init.sql
+            subPath: init.sql
+      volumes:
+        - name: init-data
+          configMap:
+            name: {{ include "app.fullname" . }}

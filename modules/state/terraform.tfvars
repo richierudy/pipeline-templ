@@ -1,0 +1,6 @@
+aws_profile      = "707965404768"
+aws_region       = "us-east-1"
+project_name     = "jenkins-pipeline"
+owner_name       = "bsakweson"
+environment_name = "Dev"
+shared_cred_file = "~/.aws/credentials"
